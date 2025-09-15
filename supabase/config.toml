@@ -1,1 +1,4 @@
 project_id = "yjohojrcekdskzhaxedm"
+
+[functions.register-concert]
+verify_jwt = false

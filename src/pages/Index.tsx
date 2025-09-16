@@ -4,6 +4,7 @@ import { CountdownTimer } from '@/components/CountdownTimer';
 import { RegistrationForm } from '@/components/RegistrationForm';
 import { TestimonialSection } from '@/components/TestimonialSection';
 import { Calendar, MapPin, Phone, Ticket, Music, Clock } from 'lucide-react';
+import { ChatBot } from '@/components/ChatBot';
 import enfantNoirImage from '@/assets/enfant-noir-concert.jpg';
 
 const Index = () => {
@@ -34,13 +35,13 @@ const Index = () => {
             <p className="text-xl md:text-2xl text-foreground/90 mb-8 font-medium">
               Un show exclusif avec <span className="text-gradient-orange font-bold">ENFANT NOIR SD</span>
               <br />
-              Le 19 septembre, le Palais de la Culture vibrera !
+              Le 19 septembre 2025, le Palais de la Culture vibrera !
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-5 w-5 text-primary" />
-                <span className="font-medium">19 Septembre 2024</span>
+                <span className="font-medium">19 Septembre 2025</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-5 w-5 text-primary" />
@@ -187,11 +188,14 @@ const Index = () => {
 
           <div className="border-t border-border/20 pt-6">
             <p className="text-muted-foreground text-sm">
-              © 2024 ENFANT NOIR Concert. Un événement à ne pas manquer !
+              © 2025 ENFANT NOIR Concert. Un événement à ne pas manquer !
             </p>
           </div>
         </div>
       </footer>
+
+      {/* ChatBot */}
+      <ChatBot />
     </div>
   );
 };

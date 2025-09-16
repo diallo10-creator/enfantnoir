@@ -116,7 +116,7 @@ const Admin = () => {
             Administration - Concert ENFANT NOIR
           </h1>
           <p className="text-foreground/80">
-            Gestion des inscriptions au concert du 19 septembre
+            Gestion des inscriptions au concert du 19 septembre 2025
           </p>
         </div>
 

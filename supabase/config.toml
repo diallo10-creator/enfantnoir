@@ -2,3 +2,6 @@ project_id = "yjohojrcekdskzhaxedm"
 
 [functions.register-concert]
 verify_jwt = false
+
+[functions.chatbot-concert]
+verify_jwt = false

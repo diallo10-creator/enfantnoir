@@ -117,7 +117,7 @@ export const RegistrationForm = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
               variant="hero" 
-              onClick={() => window.open('https://lenfantnoir.tikerama.com', '_blank')}
+              onClick={() => window.open('https://www.eventbrite.com/mytickets/', '_blank')}
               className="flex items-center gap-2"
             >
               <ExternalLink className="h-4 w-4" />

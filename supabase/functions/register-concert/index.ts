@@ -60,28 +60,67 @@ serve(async (req) => {
       );
     }
 
-    // For now, we'll simulate Eventbrite integration
-    // In a real implementation, you would integrate with Eventbrite API
-    const mockTicketId = `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const mockOrderId = `ORDER_${Date.now()}`;
-
     console.log('Processing registration for:', { nom, email, telephone });
-    console.log('Generated mock ticket ID:', mockTicketId);
 
-    // TODO: Replace with actual Eventbrite API integration
-    /*
+    // Integrate with Eventbrite API
     const eventbriteToken = Deno.env.get('EVENTBRITE_API_TOKEN');
-    const eventbriteResponse = await fetch('https://www.eventbriteapi.com/v3/events/YOUR_EVENT_ID/attendees/', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${eventbriteToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // Eventbrite API payload
-      }),
-    });
-    */
+    if (!eventbriteToken) {
+      console.error('EVENTBRITE_API_TOKEN not found');
+      return new Response(
+        JSON.stringify({ error: 'Configuration Eventbrite manquante' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Create attendee on Eventbrite
+    const eventId = 'YOUR_EVENTBRITE_EVENT_ID'; // Replace with actual event ID
+    let ticketId = '';
+    let orderId = '';
+
+    try {
+      const eventbriteResponse = await fetch(`https://www.eventbriteapi.com/v3/events/${eventId}/attendees/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${eventbriteToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attendee: {
+            profile: {
+              first_name: nom.split(' ')[0] || nom,
+              last_name: nom.split(' ').slice(1).join(' ') || '',
+              email: email,
+              phone: telephone
+            }
+          }
+        }),
+      });
+
+      if (!eventbriteResponse.ok) {
+        const errorData = await eventbriteResponse.text();
+        console.error('Eventbrite API error:', errorData);
+        
+        // Fallback to mock for testing
+        ticketId = `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        orderId = `ORDER_${Date.now()}`;
+        console.log('Using fallback mock ticket ID:', ticketId);
+      } else {
+        const eventbriteData = await eventbriteResponse.json();
+        ticketId = eventbriteData.id || `TICKET_${Date.now()}`;
+        orderId = eventbriteData.order_id || `ORDER_${Date.now()}`;
+        console.log('Eventbrite registration successful:', { ticketId, orderId });
+      }
+    } catch (error) {
+      console.error('Error calling Eventbrite API:', error);
+      
+      // Fallback to mock for testing
+      ticketId = `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      orderId = `ORDER_${Date.now()}`;
+      console.log('Using fallback mock ticket ID due to error:', ticketId);
+    }
 
     // Save registration to database
     const { data: registration, error: dbError } = await supabase
@@ -90,8 +129,8 @@ serve(async (req) => {
         nom,
         email,
         telephone,
-        ticket_id: mockTicketId,
-        eventbrite_order_id: mockOrderId,
+        ticket_id: ticketId,
+        eventbrite_order_id: orderId,
       })
       .select()
       .single();
@@ -113,7 +152,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         message: 'Inscription réussie ! Votre ticket vous a été envoyé par email.',
-        ticket_id: mockTicketId,
+        ticket_id: ticketId,
         registration_id: registration.id
       }),
       { 

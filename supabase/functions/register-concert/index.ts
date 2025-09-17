@@ -64,10 +64,12 @@ serve(async (req) => {
 
     // Integrate with Eventbrite API
     const eventbriteToken = Deno.env.get('EVENTBRITE_API_TOKEN');
+    const eventbriteEventId = Deno.env.get('EVENTBRITE_EVENT_ID');
+    
     if (!eventbriteToken) {
       console.error('EVENTBRITE_API_TOKEN not found');
       return new Response(
-        JSON.stringify({ error: 'Configuration Eventbrite manquante' }),
+        JSON.stringify({ error: 'Token API Eventbrite manquant. Veuillez configurer votre token API dans les paramètres.' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -75,8 +77,18 @@ serve(async (req) => {
       );
     }
 
-    // Create attendee on Eventbrite
-    const eventId = 'YOUR_EVENTBRITE_EVENT_ID'; // Replace with actual event ID
+    if (!eventbriteEventId) {
+      console.error('EVENTBRITE_EVENT_ID not found');
+      return new Response(
+        JSON.stringify({ error: 'ID d\'événement Eventbrite manquant. Veuillez configurer l\'ID de votre événement.' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    console.log('Using Eventbrite Event ID:', eventbriteEventId);
     let ticketId = '';
     let orderId = '';
 

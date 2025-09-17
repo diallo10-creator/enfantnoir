@@ -93,7 +93,7 @@ serve(async (req) => {
     let orderId = '';
 
     try {
-      const eventbriteResponse = await fetch(`https://www.eventbriteapi.com/v3/events/${eventId}/attendees/`, {
+      const eventbriteResponse = await fetch(`https://www.eventbriteapi.com/v3/events/${eventbriteEventId}/attendees/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${eventbriteToken}`,

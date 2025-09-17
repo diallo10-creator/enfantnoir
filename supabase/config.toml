@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.chatbot-concert]
 verify_jwt = false
+
+[functions.generate-ticket]
+verify_jwt = false
+
+[functions.download-ticket]
+verify_jwt = false

@@ -160,10 +160,34 @@ serve(async (req) => {
 
     console.log('Registration saved successfully:', registration);
 
+    // Generate ticket in background
+    EdgeRuntime.waitUntil(
+      (async () => {
+        try {
+          const ticketResponse = await fetch(`${supabaseUrl}/functions/v1/generate-ticket`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${supabaseKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ registration_id: registration.id }),
+          });
+          
+          if (!ticketResponse.ok) {
+            console.error('Failed to generate ticket:', await ticketResponse.text());
+          } else {
+            console.log('Ticket generated successfully');
+          }
+        } catch (error) {
+          console.error('Error generating ticket:', error);
+        }
+      })()
+    );
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Inscription réussie ! Votre ticket vous a été envoyé par email.',
+        message: 'Inscription réussie ! Votre ticket sera disponible au téléchargement dans quelques instants.',
         ticket_id: ticketId,
         registration_id: registration.id
       }),

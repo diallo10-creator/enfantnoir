@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Mail, Phone, User, ExternalLink } from 'lucide-react';
+import { Mail, Phone, User, Download } from 'lucide-react';
 
 export const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +13,11 @@ export const RegistrationForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [registrationData, setRegistrationData] = useState<{
+    registration_id: string;
+    email: string;
+  } | null>(null);
   const { toast } = useToast();
 
   const validateEmail = (email: string) => {
@@ -75,11 +80,15 @@ export const RegistrationForm = () => {
 
       // Success
       setIsSuccess(true);
+      setRegistrationData({
+        registration_id: data.registration_id,
+        email: formData.email
+      });
       setFormData({ name: '', email: '', phone: '' });
       
       toast({
         title: "Inscription réussie ! 🎉",
-        description: data?.message || "Votre ticket vous a été envoyé par email",
+        description: data?.message || "Votre ticket sera disponible au téléchargement dans quelques instants.",
         className: "bg-primary/10 border-primary text-foreground"
       });
 
@@ -102,6 +111,49 @@ export const RegistrationForm = () => {
     });
   };
 
+  const handleDownloadTicket = async () => {
+    if (!registrationData) return;
+    
+    setIsDownloading(true);
+    try {
+      const response = await fetch(
+        `https://yjohojrcekdskzhaxedm.supabase.co/functions/v1/download-ticket?registration_id=${registrationData.registration_id}&email=${encodeURIComponent(registrationData.email)}`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors du téléchargement');
+      }
+
+      // Download the file
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ticket_${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Succès !",
+        description: "Votre ticket a été téléchargé avec succès.",
+        className: "bg-green-50 border-green-200 text-green-800"
+      });
+
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Erreur lors du téléchargement. Le ticket n'est peut-être pas encore prêt.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (isSuccess) {
     return (
       <div className="space-y-6 w-full max-w-md text-center">
@@ -111,26 +163,36 @@ export const RegistrationForm = () => {
             Inscription réussie !
           </h3>
           <p className="text-foreground/80 mb-4">
-            Votre ticket vous a été envoyé par email. Vérifiez votre boîte de réception.
+            Votre ticket sera disponible au téléchargement dans quelques instants.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
               variant="hero" 
-              onClick={() => window.open('https://www.eventbrite.com/mytickets/', '_blank')}
+              onClick={handleDownloadTicket}
+              disabled={isDownloading}
               className="flex items-center gap-2"
             >
-              <ExternalLink className="h-4 w-4" />
-              Voir mes tickets
+              <Download className="h-4 w-4" />
+              {isDownloading ? 'Téléchargement...' : 'Télécharger mon ticket'}
             </Button>
             <Button 
               variant="outline" 
-              onClick={() => setIsSuccess(false)}
+              onClick={() => {
+                setIsSuccess(false);
+                setRegistrationData(null);
+              }}
               className="border-primary/30 text-primary hover:bg-primary/10"
             >
               Nouvelle inscription
             </Button>
           </div>
+          
+          {isDownloading && (
+            <p className="text-sm text-muted-foreground mt-3">
+              Génération du ticket en cours...
+            </p>
+          )}
         </div>
       </div>
     );

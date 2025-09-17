@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      contacts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          nom: string
+          status: string
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          nom: string
+          status?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          nom?: string
+          status?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inscriptions_concert: {
         Row: {
           created_at: string
@@ -23,6 +56,7 @@ export type Database = {
           id: string
           nom: string
           telephone: string
+          ticket_file_path: string | null
           ticket_id: string | null
           updated_at: string
         }
@@ -34,6 +68,7 @@ export type Database = {
           id?: string
           nom: string
           telephone: string
+          ticket_file_path?: string | null
           ticket_id?: string | null
           updated_at?: string
         }
@@ -45,7 +80,47 @@ export type Database = {
           id?: string
           nom?: string
           telephone?: string
+          ticket_file_path?: string | null
           ticket_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      medias: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number | null
+          file_size: number | null
+          file_url: string
+          id: string
+          media_type: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          file_size?: number | null
+          file_url: string
+          id?: string
+          media_type: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          media_type?: string
+          thumbnail_url?: string | null
+          title?: string
           updated_at?: string
         }
         Relationships: []

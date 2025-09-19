@@ -190,6 +190,16 @@ const Index = () => {
             <p className="text-muted-foreground text-sm">
               © 2025 ENFANT NOIR Concert. Un événement à ne pas manquer !
             </p>
+            <div className="mt-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs text-muted-foreground hover:text-primary"
+                onClick={() => window.location.href = '/auth'}
+              >
+                Administration
+              </Button>
+            </div>
           </div>
         </div>
       </footer>

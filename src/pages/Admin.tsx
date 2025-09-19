@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Download, RefreshCw, Users } from 'lucide-react';
+import { Download, RefreshCw, Users, LogOut, Shield } from 'lucide-react';
 
 interface Registration {
   id: string;
@@ -21,6 +22,23 @@ const Admin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la déconnexion",
+        variant: "destructive"
+      });
+    }
+  };
 
   const fetchRegistrations = async () => {
     setIsLoading(true);
@@ -111,6 +129,25 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-hero p-4">
       <div className="max-w-7xl mx-auto">
+        {/* Header avec authentification */}
+        <div className="flex justify-between items-center mb-6 p-4 bg-card/50 backdrop-blur-sm rounded-lg border border-border/50">
+          <div className="flex items-center gap-3">
+            <Shield className="h-6 w-6 text-primary" />
+            <div>
+              <h2 className="font-semibold text-foreground">Administrateur connecté</h2>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={handleSignOut}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Déconnexion
+          </Button>
+        </div>
+
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold text-gradient-orange mb-2">
             Administration - Concert ENFANT NOIR
